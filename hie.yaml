@@ -1,0 +1,6 @@
+cradle:
+  cabal:
+    - path: "./src"
+      component: "lib:optimal-binary-accelerate"
+    - path: "./test"
+      component: "test:optimal-binary-accelerate-test"
