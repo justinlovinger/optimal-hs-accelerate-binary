@@ -4,8 +4,8 @@ import qualified Data.Array.Accelerate         as A
 import qualified Data.Array.Accelerate.Interpreter
                                                as AI
 import           Math.Optimization.Accelerate.Binary
-                                                ( fromBits
-                                                , fromBits'
+                                                ( fromBools
+                                                , fromBools'
                                                 )
 import           Test.Hspec                     ( Spec
                                                 , describe
@@ -21,98 +21,98 @@ spec =
     $ describe "Accelerate"
     $ describe "Binary"
     $ do
-        describe "fromBits" $ do
+        describe "fromBools" $ do
           let ub' lb x = lb + abs x
-          it "returns lower bound when no bits" $ property $ \lb x ->
-            fromBitsL lb (ub' lb x) [] == lb
-          it "returns lower bound when all bits are 0" $ property $ \lb x ->
+          it "returns lower bound for empty" $ property $ \lb x ->
+            fromBoolsL lb (ub' lb x) [] == lb
+          it "returns lower bound when all False" $ property $ \lb x ->
             let ub = ub' lb x
-            in  fromBitsL lb ub [False]
+            in  fromBoolsL lb ub [False]
                   ~= lb
-                  && fromBitsL lb ub [False, False]
+                  && fromBoolsL lb ub [False, False]
                   ~= lb
-                  && fromBitsL lb ub [False, False, False]
+                  && fromBoolsL lb ub [False, False, False]
                   ~= lb
-          it "returns upper bound when all bits are 1" $ property $ \lb x ->
+          it "returns upper bound when all True" $ property $ \lb x ->
             let ub = ub' lb x
-            in  fromBitsL lb ub [True]
+            in  fromBoolsL lb ub [True]
                   ~= ub
-                  && fromBitsL lb ub [True, True]
+                  && fromBoolsL lb ub [True, True]
                   ~= ub
-                  && fromBitsL lb ub [True, True, True]
+                  && fromBoolsL lb ub [True, True, True]
                   ~= ub
           it
-              "returns a number between lower and upper bound when some bits are 1"
+              "returns a number between lower and upper bound when some True"
             $ property
             $ \lb x ->
                 let ub       = ub' lb x + 0.001
                     between' = between lb ub
-                in  between' (fromBitsL lb ub [False, True])
-                      && between' (fromBitsL lb ub [True, False])
-                      && between' (fromBitsL lb ub [True, False, True])
+                in  between' (fromBoolsL lb ub [False, True])
+                      && between' (fromBoolsL lb ub [True, False])
+                      && between' (fromBoolsL lb ub [True, False, True])
           it "monotonically increases as binary increases"
             $ property
             $ \lb x ->
                 let ub = ub' lb x + 0.001
-                in  fromBitsL lb ub [True]
-                      >  fromBitsL lb ub [False]
-                      && fromBitsL lb ub [True, False]
-                      >  fromBitsL lb ub [False, False]
-                      && fromBitsL lb ub [False, True]
-                      >  fromBitsL lb ub [True, False]
-                      && fromBitsL lb ub [True, True]
-                      >  fromBitsL lb ub [False, True]
-                      && fromBitsL lb ub [True, False, False]
-                      >  fromBitsL lb ub [False, False, False]
-                      && fromBitsL lb ub [False, True, False]
-                      >  fromBitsL lb ub [True, False, False]
-                      && fromBitsL lb ub [True, True, False]
-                      >  fromBitsL lb ub [False, True, False]
-                      && fromBitsL lb ub [False, False, True]
-                      >  fromBitsL lb ub [True, True, False]
-                      && fromBitsL lb ub [True, False, True]
-                      >  fromBitsL lb ub [False, False, True]
-                      && fromBitsL lb ub [False, True, True]
-                      >  fromBitsL lb ub [True, False, True]
-                      && fromBitsL lb ub [True, True, True]
-                      >  fromBitsL lb ub [False, True, True]
+                in  fromBoolsL lb ub [True]
+                      >  fromBoolsL lb ub [False]
+                      && fromBoolsL lb ub [True, False]
+                      >  fromBoolsL lb ub [False, False]
+                      && fromBoolsL lb ub [False, True]
+                      >  fromBoolsL lb ub [True, False]
+                      && fromBoolsL lb ub [True, True]
+                      >  fromBoolsL lb ub [False, True]
+                      && fromBoolsL lb ub [True, False, False]
+                      >  fromBoolsL lb ub [False, False, False]
+                      && fromBoolsL lb ub [False, True, False]
+                      >  fromBoolsL lb ub [True, False, False]
+                      && fromBoolsL lb ub [True, True, False]
+                      >  fromBoolsL lb ub [False, True, False]
+                      && fromBoolsL lb ub [False, False, True]
+                      >  fromBoolsL lb ub [True, True, False]
+                      && fromBoolsL lb ub [True, False, True]
+                      >  fromBoolsL lb ub [False, False, True]
+                      && fromBoolsL lb ub [False, True, True]
+                      >  fromBoolsL lb ub [True, False, True]
+                      && fromBoolsL lb ub [True, True, True]
+                      >  fromBoolsL lb ub [False, True, True]
           it "converts each row in a matrix to a number" $ do
             AI.run
-                (fromBits (A.constant 0) (A.constant 3) $ A.use $ A.fromList
+                (fromBools (A.constant 0) (A.constant 3) $ A.use $ A.fromList
                   (A.Z A.:. 3 A.:. 2)
                   [False, False, True, False, False, True]
                 )
               `shouldBe` A.fromList (A.Z A.:. (3 :: Int)) [0 :: Double, 1, 2]
 
-        describe "fromBits'" $ do
-          it "returns 0 when no bits" $ do
-            fromBitsL' [] `shouldBe` 0
+        describe "fromBools'" $ do
+          it "returns 0 when empty" $ do
+            fromBoolsL' [] `shouldBe` 0
           it "returns the base 10 integer represented by binary bits" $ do
-            fromBitsL' [False] `shouldBe` 0
-            fromBitsL' [False, False] `shouldBe` 0
-            fromBitsL' [False, False, False] `shouldBe` 0
-            fromBitsL' [True] `shouldBe` 1
-            fromBitsL' [True, True] `shouldBe` 3
-            fromBitsL' [True, True, True] `shouldBe` 7
-          it "treats the leftmost bit as least significant" $ do
-            fromBitsL' [False, True] `shouldBe` 2
-            fromBitsL' [False, False, True] `shouldBe` 4
+            fromBoolsL' [False] `shouldBe` 0
+            fromBoolsL' [False, False] `shouldBe` 0
+            fromBoolsL' [False, False, False] `shouldBe` 0
+            fromBoolsL' [True] `shouldBe` 1
+            fromBoolsL' [True, True] `shouldBe` 3
+            fromBoolsL' [True, True, True] `shouldBe` 7
+          it "treats leftmost as least significant" $ do
+            fromBoolsL' [False, True] `shouldBe` 2
+            fromBoolsL' [False, False, True] `shouldBe` 4
           it "converts each row in a matrix to a number" $ do
             AI.run
-                (fromBits' $ A.use $ A.fromList
+                (fromBools' $ A.use $ A.fromList
                   (A.Z A.:. 3 A.:. 2)
                   [False, False, True, False, False, True]
                 )
               `shouldBe` A.fromList (A.Z A.:. (3 :: Int)) [0 :: Int, 1, 2]
 
-fromBitsL :: Double -> Double -> [Bool] -> Double
-fromBitsL lb ub xs = head $ A.toList $ AI.run $ fromBits
+fromBoolsL :: Double -> Double -> [Bool] -> Double
+fromBoolsL lb ub xs = head $ A.toList $ AI.run $ fromBools
   (A.constant lb)
   (A.constant ub)
   (A.use $ A.fromList (A.Z A.:. length xs) xs)
 
-fromBitsL' :: [Bool] -> Int
-fromBitsL' xs = head $ A.toList $ AI.run $ fromBits'
+fromBoolsL' :: [Bool] -> Int
+fromBoolsL' xs = head $ A.toList $ AI.run $ fromBools'
   (A.use $ A.fromList (A.Z A.:. length xs) xs)
 
 (~=) :: (Floating a, Ord a) => a -> a -> Bool
