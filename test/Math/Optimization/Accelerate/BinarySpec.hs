@@ -41,8 +41,7 @@ spec =
                   ~= ub
                   && fromBoolsL lb ub [True, True, True]
                   ~= ub
-          it
-              "returns a number between lower and upper bound when some True"
+          it "returns a number between lower and upper bound when some True"
             $ property
             $ \lb x ->
                 let ub       = ub' lb x + 0.001
