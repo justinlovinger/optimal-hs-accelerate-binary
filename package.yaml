@@ -1,6 +1,6 @@
-name:                optimal-binary-accelerate
+name:                optimal-hs-accelerate-binary
 version:             1.0.0.0
-github:              "JustinLovinger/optimal-binary-accelerate"
+github:              "JustinLovinger/optimal-hs-accelerate-binary"
 license:             MIT
 author:              "Justin Lovinger"
 maintainer:          "git@justinlovinger.com"
@@ -16,7 +16,7 @@ synopsis:            Convert binary vectors backed by Accelerate.
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/JustinLovinger/optimal-binary-accelerate#readme>
+description:         Please see the README on GitHub at <https://github.com/JustinLovinger/optimal-hs-accelerate-binary#readme>
 
 ghc-options:
   -Wall
@@ -29,7 +29,7 @@ library:
   source-dirs: src
 
 tests:
-  optimal-binary-accelerate-test:
+  optimal-hs-accelerate-binary-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -39,5 +39,5 @@ tests:
     dependencies:
       - QuickCheck
       - hspec
-      - optimal-binary-accelerate
+      - optimal-hs-accelerate-binary
       - random >= 1.1
