@@ -10,10 +10,10 @@ like:
 ```haskell
 import qualified Data.Array.Accelerate         as A
 import           Math.Optimization.Accelerate.Binary
-                                                ( reverseBitsToFrac )
+                                                ( reversedBitsToFrac )
 
 f' = A.Acc (A.Vector Bool) -> A.Acc (A.Scalar Double)
-f' = f . reverseBitsToFrac lb ub . A.reshape (A.constant $ A.Z A.:. n A.:. b)
+f' = f . reversedBitsToFrac lb ub . A.reshape (A.constant $ A.Z A.:. n A.:. b)
 ```
 where `f` is an objective function
 with a type like `A.Acc (A.Vector Double) -> A.Acc (A.Scalar Double)`,
