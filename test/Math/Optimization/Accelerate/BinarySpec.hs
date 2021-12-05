@@ -4,7 +4,8 @@ import qualified Data.Array.Accelerate         as A
 import qualified Data.Array.Accelerate.Interpreter
                                                as AI
 import           Math.Optimization.Accelerate.Binary
-                                                ( reversedBitsToFrac
+                                                ( fromBool
+                                                , reversedBitsToFrac
                                                 , reversedBitsToInt
                                                 )
 import           Test.Hspec                     ( Spec
@@ -106,6 +107,12 @@ spec =
                 )
               `shouldBe` A.fromList (A.Z A.:. (3 :: Int)) [0 :: Int, 1, 2]
 
+        describe "fromBool" $ do
+          it "returns 0 from False" $ do
+            fromBool (A.constant False) `eEq` A.constant (0 :: Double)
+          it "returns 1 from True" $ do
+            fromBool (A.constant True) `eEq` A.constant (1 :: Double)
+
 reversedBitsToFracL :: Double -> Double -> [Bool] -> Double
 reversedBitsToFracL lb ub xs = head $ A.toList $ AI.run $ reversedBitsToFrac
   (A.constant lb)
@@ -124,3 +131,6 @@ aboutEquals tol x y = abs (x - y) < tol
 
 between :: Ord a => a -> a -> a -> Bool
 between lb ub x = x > lb && x < ub
+
+eEq :: (A.Eq a) => A.Exp a -> A.Exp a -> Bool
+eEq x y = head $ A.toList $ AI.run $ A.unit $ x A.== y
